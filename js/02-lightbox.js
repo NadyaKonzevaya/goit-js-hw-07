@@ -31,6 +31,7 @@ const refs = {
     gallery : document.querySelector(".gallery"),
 }
 
+
 // создаем разметку по массиву данных
 
 function createItemsMarkup (items) {
@@ -49,25 +50,18 @@ const markup = createItemsMarkup(galleryItems);
 refs.gallery.innerHTML = markup;
 
 // Реализация делегирования на div.gallery и получение url большого изображения
-
-refs.gallery.addEventListener("click", onImageClick);
-
-function onImageClick (event) {
-    event.preventDefault();
-    console.log()
-    
-    if (event.target.nodeName !== "IMG") {
-        return;
-    }
 // добавить отображение подписей к изображениям из атрибута alt. Пусть подпись будет снизу и появляется через 250 миллисекунд после открытия изображения.
 
-    var lightbox = new SimpleLightbox('.gallery a', { 
-        caption: true, 
-        captionSelector: 'img',
-        captionType: 'attr',
-        captionsData: 'alt',
-        captionPosition: 'bottom',
-        captionDelay: 250,
-    })
-}
+const lightbox = new SimpleLightbox('.gallery a', { 
+    // caption: true, 
+    // captionSelector: 'img',
+    // captionType: 'attr',
+    captionsData: 'alt',
+    // captionPosition: 'bottom',
+    captionDelay: 250,
+})
+
+refs.gallery.addEventListener("click", (event) => event.preventDefault());
+
+
 

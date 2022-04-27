@@ -45,8 +45,8 @@ const refs = {
 // создаем разметку по массиву данных
 
 function createItemsMarkup (items) {
-    return items.map(item => {
-        return `
+    return items.map(item => 
+        `
         <div class="gallery__item">
             <a class="gallery__link" href=${item.original}>
                 <img
@@ -57,7 +57,7 @@ function createItemsMarkup (items) {
                 />
             </a>
         </div>
-    `}).join("");
+        `).join("");
 };
 
 const markup = createItemsMarkup(galleryItems);
@@ -78,11 +78,8 @@ function onImageClick (event) {
         return;
     }
     
-    
-    event.target.src = event.target.dataset.source;
-
     const instance = basicLightbox.create(`
-    <img width="1400" height="900" src=${event.target.src}>
+    <img width="1400" height="900" src=${event.target.dataset.source}>
     `,
    //  добавляем закрытие модального окна по нажатию клавиши Escape и прослушивание клавиатуры было только пока открыто модальное окно
     {onShow: (instance) => {window.addEventListener("keydown", onEscapeKeyPress)},
