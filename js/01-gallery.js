@@ -1,4 +1,4 @@
-import { galleryItems } from './gallery-items.js';
+
 // Задание 1. Создай галерею с возможностью клика по её элементам и просмотра полноразмерного изображения в модальном окне. 
 // Посмотри демо видео работы галереи.
 
@@ -36,7 +36,7 @@ import { galleryItems } from './gallery-items.js';
 // Сделай так, чтобы прослушивание клавиатуры было только пока открыто модальное окно. 
 // У библиотеки basicLightbox есть метод для программного закрытия модального окна.
 
-
+import { galleryItems } from './gallery-items.js';
 // Создаем рефы
 const refs = {
     gallery : document.querySelector(".gallery"),
@@ -45,7 +45,7 @@ const refs = {
 // создаем разметку по массиву данных
 
 function createItemsMarkup (items) {
-    return items.map(item => 
+    return items.map((item,idx) => 
         `
         <div class="gallery__item">
             <a class="gallery__link" href=${item.original}>
@@ -54,6 +54,7 @@ function createItemsMarkup (items) {
                     src=${item.preview}
                     data-source=${item.original}
                     alt=${item.description}
+                    index=${idx}
                 />
             </a>
         </div>
@@ -61,6 +62,13 @@ function createItemsMarkup (items) {
 };
 
 const markup = createItemsMarkup(galleryItems);
+let currentIndex = 0;
+let instance = basicLightbox.create(`
+    <img width="1400" height="900">
+    `,
+   // добавляем закрытие модального окна по нажатию клавиши Escape и прослушивание клавиатуры было только пока открыто модальное окно
+    {onShow: (instance) => {window.addEventListener("keydown", onButtonPress)},
+	onClose: (instance) => {window.removeEventListener("keydown", onButtonPress)}});
 
 
 // рендерим разметку
@@ -77,23 +85,61 @@ function onImageClick (event) {
     if (event.target.nodeName !== "IMG") {
         return;
     }
-    
-    const instance = basicLightbox.create(`
-    <img width="1400" height="900" src=${event.target.dataset.source}>
-    `,
-   //  добавляем закрытие модального окна по нажатию клавиши Escape и прослушивание клавиатуры было только пока открыто модальное окно
-    {onShow: (instance) => {window.addEventListener("keydown", onEscapeKeyPress)},
-	onClose: (instance) => {window.removeEventListener("keydown", onEscapeKeyPress)}});
+    currentIndex = Number(event.target.getAttribute("index"))
+    // instance.element() по документации библиотеки возвращает модальное окно, в нем мы обращаемся к img
+    setNewUrl(event.target.dataset.source);
     instance.show();
-
-    function onEscapeKeyPress (event) {
-        if (event.code === "Escape" ) {
-            instance.close();
-        }
-    }   
 }
 
+// function onEscapeKeyPress(event) {
+//         if (event.code === "Escape" ) {
+//             instance.close();
+//         }
+//         if (event.code === "ArrowRight") {
+//             currentIndex += 1;
+//              if (currentIndex >= galleryItems.length ) {
+//                 currentIndex = 0;
+//             }
+//             setNewUrl(galleryItems[currentIndex].original);
+//         }
+//         if (event.code === "ArrowLeft") {
+//             currentIndex -= 1;
+//             if (currentIndex < 0) {
+//                 currentIndex = galleryItems.length - 1;
+//             }
+//             setNewUrl(galleryItems[currentIndex].original);
+//         }
+// }   
 
+// перепишем функцию onEscapeKeyPress(event) на switch:
+
+function onButtonPress(event) {
+    switch (event.code) {
+        case "Escape":
+            instance.close();
+            break;
+        case "ArrowRight":
+            currentIndex += 1;
+            if (currentIndex >= galleryItems.length ) {
+                currentIndex = 0;
+            }
+            setNewUrl(galleryItems[currentIndex].original);
+            break;
+        case "ArrowLeft":
+            currentIndex -= 1;
+            if (currentIndex < 0) {
+                currentIndex = galleryItems.length - 1;
+            }
+            setNewUrl(galleryItems[currentIndex].original);
+            break;
+        default:
+            console.log("тисни правильную кнопку")
+    }
+}
+    
+function setNewUrl(url) {
+     instance.element().querySelector("img").src = url;
+}
 
 
 
